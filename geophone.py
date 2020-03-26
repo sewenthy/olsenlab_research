@@ -11,40 +11,58 @@ from matplotlib import style
 value_fig = plt.figure()
 value_ax = value_fig.add_subplot(1,1,1)
 
-voltage_fig = plt.figure()
-voltage_ax = voltage_fig.add_subplot(1,1,1)
+
+#voltage_fig = plt.figure()
+#voltage_ax = voltage_fig.add_subplot(1,1,1)
 
 i2c = busio.I2C(board.SCL, board.SDA)
 
-ads = ADS.ADS1015(i2c)
+ads = ADS.ADS1015(i2c,data_rate=3300)
 
-channel = AnalogIn(ads, ADS.P0) #0
+channel = AnalogIn(ads, ADS.P1) #1
 
 #print("{:>5}\t{:>5}".format('raw', 'v'))
 
+def animate_value(i,xs,values):
+    added = []
+    while len(added)<500:
+        xs.append(time.monotonic())
+        values.append(channel.value)
+        added.append(channel.value)
+        print("{:>5}\t{:>5f}".format(channel.value, channel.voltage))
 
-def animate_value(i):
+
+    xs = xs[-1000:]
+    values = values[-1000:]
+    value_ax.clear()
+    value_ax.plot(xs, values)
+    
+def animate_value_whole(i):
     xs = []
     values = []
-    while len(values)<100:
+    while len(values)<350:
         xs.append(time.monotonic())
         values.append(channel.value)
 
+        print("{:>5}\t{:>5f}".format(channel.value, channel.voltage))
+
     value_ax.clear()
     value_ax.plot(xs, values)
+"""
+def animate_voltage(i,xs,voltages):
+        while len(voltages)<1000:
+                xs.append(time.monotonic())
+                voltages.append(channel.voltage)
 
-def animate_voltage(i):
-    xs = []
-    voltages = []
-    while len(voltages)<100:
-        xs.append(time.monotonic())
-        voltages.append(channel.voltage)
+        xs = xs[-5000:]
+        values = values[-5000:]
+        voltage_ax.clear()
+        voltage_ax.plot(xs, voltages)
+"""
+#ani_value = animation.FuncAnimation(value_fig,animate_value,fargs=([],[]),interval=100)
+ani_value = animation.FuncAnimation(value_fig,animate_value_whole,interval=200)
 
-    voltage_ax.clear()
-    voltage_ax.plot(xs, voltages)
-
-ani_value = animation.FuncAnimation(value_fig,animate_value)
-ani_voltage = animation.FuncAnimation(voltage_fig,animate_voltage)
+#ani_voltage = animation.FuncAnimation(voltage_fig,animate_voltage,fargs=([],[]))
 
 plt.show()
 
