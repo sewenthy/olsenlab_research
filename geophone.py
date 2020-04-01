@@ -35,6 +35,7 @@ def animate_value(i,xs,values):
     xs = xs[-1000:]
     values = values[-1000:]
     value_ax.clear()
+    value_ax.set_ylim(-1000,5000)
     value_ax.plot(xs, values)
     
 def animate_value_whole(i):
@@ -47,6 +48,10 @@ def animate_value_whole(i):
         print("{:>5}\t{:>5f}".format(channel.value, channel.voltage))
 
     value_ax.clear()
+    #NOISE LEVEL 1320,1460
+    #value_ax.set_ylim(-1000,4000)
+    
+    #TODO: CHANGE TO FILE BASED READING AND WRITING 
     value_ax.plot(xs, values)
 """
 def animate_voltage(i,xs,voltages):
